@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") apply false
 }
 
 group = "com.fedorovsky"
@@ -15,6 +15,4 @@ subprojects {
     }
     group = rootProject.group
     version = rootProject.version
-
-    tasks.register("prepareKotlinBuildScriptModel")
 }
