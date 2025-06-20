@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") apply false
 }
 
 group = "com.fedorovsky"
@@ -9,13 +9,10 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(21)
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+    group = rootProject.group
+    version = rootProject.version
 }
