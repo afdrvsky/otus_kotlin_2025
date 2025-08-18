@@ -1,0 +1,342 @@
+openapi: 3.0.3
+info:
+  title: "Mkdservice ${VERSION_APP}"
+  description: Mkdservice is a service for residents of multi-apartment buildings.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/v1
+tags:
+  - name: meter
+    description: Transfer, receive and delete meter readings
+
+paths:
+  /meter/create:
+    post:
+      tags:
+        - meter
+      summary: Передача новых показаний createMeter
+      operationId: meterCreate
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeterReadingCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterCreateResponse'
+
+  /meter/read:
+    post:
+      tags:
+        - meter
+      summary: Получение информации о показаниях readMeter
+      operationId: meterRead
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeterReadingReadRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MeterReadResponse'
+
+  /meter/update:
+    post:
+      tags:
+        - meter
+      summary: Обновление показания updateMeter
+      operationId: meterUpdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeterUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeterUpdateResponse'
+
+  /meter/delete:
+    post:
+      tags:
+        - meter
+      summary: Удаление показания deleteMeter
+      operationId: meterDelete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeterDeleteRequest'
+      responses:
+        '204':
+          description: No Content (successful deletion)
+
+components:
+  schemas:
+
+    IRequest:
+      type: object
+      description: Базовый интерфейс для всех запросов
+      properties:
+        requestType:
+          type: string
+          description: Поле-дескриминатор для вычисления типа запроса
+          example: create
+      discriminator:
+        propertyName: requestType
+        mapping:
+          create: '#/components/schemas/MeterReadingCreateRequest'
+          read: '#/components/schemas/MeterReadingReadRequest'
+          update: '#/components/schemas/MeterUpdateRequest'
+          delete: '#/components/schemas/MeterDeleteRequest'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        group:
+          type: string
+        field:
+          type: string
+        message:
+          type: string
+
+    ResponseResult:
+      type: string
+      enum:
+        - success
+        - error
+
+    IResponse:
+      type: object
+      description: Базовый интерфейс для всех ответов
+      properties:
+        responseType:
+          type: string
+          description: Поле-дескриминатор для вычисления типа запроса
+          example: create
+        result:
+          $ref: '#/components/schemas/ResponseResult'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+      discriminator:
+        propertyName: responseType
+        mapping:
+          create: '#/components/schemas/MeterCreateResponse'
+          read: '#/components/schemas/MeterReadResponse'
+          update: '#/components/schemas/MeterUpdateResponse'
+          init: '#/components/schemas/MeterInitResponse'
+
+    Id:
+      type: integer
+      example: 1
+      description: Уникальный идентификатор показания
+    DateTime:
+      type: string
+      example: "2025-07-20T10:00:00Z"
+      description: Дата и время передачи показания
+    Amount:
+      type: string
+      example: "55.9"
+      description: Текущее значение
+    Unit:
+      type: string
+      example: "m3"
+      description: Единица измерения
+    MeterId:
+      type: integer
+      example: 1
+      description: Идентификатор счетчика
+    ApartmentId:
+      type: integer
+      example: 10
+      description: Идентификатор квартиры/помещения
+
+    BaseMeterReading:
+      type: object
+      description: Объект описывает свойства, одинаковые для create и update
+      properties:
+        amount:
+          type: string
+          $ref: '#/components/schemas/Amount'
+        unit:
+          type: string
+          $ref: '#/components/schemas/Unit'
+
+    MeterInitResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+
+    MeterCreateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseMeterReading'
+        - type: object
+          properties:
+            meterId:
+              $ref: '#/components/schemas/MeterId'
+            apartmentId:
+              $ref: '#/components/schemas/ApartmentId'
+
+    MeterReadingCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/MeterRequestDebug'
+        - type: object
+          properties:
+            meter:
+              $ref: '#/components/schemas/MeterCreateObject'
+
+    MeterReadingReadObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/Id'
+            meterId:
+              $ref: '#/components/schemas/MeterId'
+            apartmentId:
+              $ref: '#/components/schemas/ApartmentId'
+
+    MeterReadingReadRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/MeterRequestDebug'
+        - type: object
+          properties:
+            meter:
+              $ref: '#/components/schemas/MeterReadingReadObject'
+
+    MeterUpdateObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseMeterReading'
+        - type: object
+          properties:
+            meter:
+              $ref: '#/components/schemas/Id'
+
+    MeterUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/MeterRequestDebug'
+        - type: object
+          properties:
+            meter:
+              $ref: '#/components/schemas/MeterUpdateObject'
+
+    MeterDeleteObject:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/Id'
+
+    MeterDeleteRequest:
+      allOf:
+        - $ref: '#/components/schemas/IRequest'
+        - $ref: '#/components/schemas/MeterRequestDebug'
+        - type: object
+          properties:
+            meter:
+              $ref: '#/components/schemas/MeterDeleteObject'
+
+    MeterResponseObject:
+      allOf:
+        - $ref: '#/components/schemas/BaseMeterReading'
+        - type: object
+          description: Объект, который возвращается в ответе бэкенда
+          properties:
+            id:
+              $ref: '#/components/schemas/Id'
+            dateTime:
+              $ref: '#/components/schemas/DateTime'
+            meterId:
+              $ref: '#/components/schemas/MeterId'
+            apartmentId:
+              $ref: '#/components/schemas/ApartmentId'
+
+    MeterSingleResponse:
+      allOf:
+        - type: object
+        - properties:
+            meter:
+              $ref: '#/components/schemas/MeterResponseObject'
+
+    MeterCreateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/MeterSingleResponse'
+
+    MeterReadResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/MeterSingleResponse'
+
+    MeterUpdateResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/MeterSingleResponse'
+
+    MeterDeleteResponse:
+      allOf:
+        - $ref: '#/components/schemas/IResponse'
+        - $ref: '#/components/schemas/MeterSingleResponse'
+
+
+    # STUBS ======================
+    MeterRequestDebugMode:
+      type: string
+      enum:
+        - prod
+        - test
+        - stub
+
+    MeterRequestDebug:
+      type: object
+      properties:
+        debug:
+          $ref: '#/components/schemas/MeterDebug'
+
+    MeterDebug:
+      type: object
+      properties:
+        mode:
+          $ref: '#/components/schemas/MeterRequestDebugMode'
+        stub:
+          $ref: '#/components/schemas/MeterRequestDebugStubs'
+
+    MeterRequestDebugStubs:
+      type: string
+      description: Перечисления всех стабов
+      enum:
+        - success
+        - notFound
+        - badAmount
+        - badUnit
+        - badMeterId
+        - badApartmentId
+        - cannotDelete

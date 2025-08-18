@@ -22,9 +22,11 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
-rootProject.name = "project"
+
+rootProject.name = "mkdservice-be"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-include("project-tmp")
-
+include("mkdservice-api-v1-kmp")
+include("mkdservice-common")
+include("mkdservice-stubs")
