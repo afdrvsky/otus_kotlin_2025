@@ -151,6 +151,7 @@ components:
           read: '#/components/schemas/MeterReadResponse'
           update: '#/components/schemas/MeterUpdateResponse'
           init: '#/components/schemas/MeterInitResponse'
+          delete: '#/components/schemas/MeterDeleteResponse'
 
     Id:
       type: integer

@@ -1,0 +1,25 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/v1/meter/update"
+  },
+
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "responseType": "update",
+      "result": "success",
+      "meter": {
+        "amount": "55.9",
+        "unit": "m3",
+        "id": 1,
+        "dateTime": "2025-07-02T00:00:00.000Z",
+        "meterId": 2,
+        "apartmentId": 3
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

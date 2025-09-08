@@ -13,3 +13,5 @@ rootProject.name = "otus-kotlin"
 includeBuild("lessons")
 includeBuild("mkdservice-be")
 includeBuild("build-plugin")
+includeBuild("mkdservice-libs")
+includeBuild("mkdservice-tests")
