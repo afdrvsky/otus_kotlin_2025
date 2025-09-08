@@ -1,6 +1,6 @@
 package com.fedorovsky.mkdservice.common
 
-import kotlin.time.Instant
+import kotlinx.datetime.Instant
 
 private val INSTANT_NONE = Instant.fromEpochMilliseconds(Long.MIN_VALUE)
 val Instant.Companion.NONE

@@ -19,9 +19,9 @@ pluginManagement {
 }
 
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-}
+//plugins {
+//    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+//}
 
 rootProject.name = "mkdservice-be"
 
@@ -30,3 +30,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include("mkdservice-api-v1-kmp")
 include("mkdservice-common")
 include("mkdservice-stubs")
+include("mkdservice-app-ktor")
+include("mkdservice-app-common")
+include("mkdservice-biz")
+include("mkdservice-app-kafka")

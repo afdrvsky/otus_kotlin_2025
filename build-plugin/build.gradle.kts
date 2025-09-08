@@ -9,11 +9,15 @@ gradlePlugin {
     plugins {
         register("build-jvm") {
             id = "build-jvm"
-            implementationClass = "BuildPluginJvm"
+            implementationClass = "com.fedorovsky.mkdservice.plugin.BuildPluginJvm"
         }
         register("build-kmp") {
             id = "build-kmp"
-            implementationClass = "BuildPluginMultiplatform"
+            implementationClass = "com.fedorovsky.mkdservice.plugin.BuildPluginMultiplatform"
+        }
+        register("build-docker") {
+            id = "build-docker"
+            implementationClass = "com.fedorovsky.mkdservice.plugin.DockerPlugin"
         }
     }
 }
