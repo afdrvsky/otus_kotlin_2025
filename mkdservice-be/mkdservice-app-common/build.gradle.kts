@@ -12,7 +12,7 @@ kotlin {
 
                 // transport models
                 implementation(project(":mkdservice-common"))
-//                implementation(project(":ok-marketplace-api-log1"))
+                implementation(project(":mkdservice-api-log"))
                 implementation(project(":mkdservice-api-v1-kmp"))
 
                 implementation(project(":mkdservice-biz"))

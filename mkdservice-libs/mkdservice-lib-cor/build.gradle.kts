@@ -4,22 +4,17 @@ plugins {
 
 kotlin {
     sourceSets {
-        all { languageSettings.optIn("kotlin.RequiresOptIn") }
-
         commonMain {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation(libs.cor)
-                implementation(project(":mkdservice-common"))
-                implementation(project(":mkdservice-stubs"))
+                implementation(libs.coroutines.core)
             }
         }
         commonTest {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-
-                api(libs.coroutines.test)
+                implementation(libs.coroutines.test)
             }
         }
         jvmMain {

@@ -1,5 +1,6 @@
 package com.fedorovsky.mkdservice.app.common
 
+import com.fedorovsky.mkdservice.api.log.mapper.toLog
 import com.fedorovsky.mkdservice.common.MeterReadingContext
 import com.fedorovsky.mkdservice.common.helpers.asMkdError
 import com.fedorovsky.mkdservice.common.models.MeterCommand
@@ -22,20 +23,20 @@ suspend inline fun <T> IMkdAppSettings.controllerHelper(
         logger.info(
             msg = "Request $logId started for ${clazz.simpleName}",
             marker = "BIZ",
-//            data = ctx.toLog(logId)
+            data = ctx.toLog(logId)
         )
         processor.exec(ctx)
         logger.info(
             msg = "Request $logId processed for ${clazz.simpleName}",
             marker = "BIZ",
-//            data = ctx.toLog(logId)
+            data = ctx.toLog(logId)
         )
         ctx.toResponse()
     } catch (e: Throwable) {
         logger.error(
             msg = "Request $logId failed for ${clazz.simpleName}",
             marker = "BIZ",
-//            data = ctx.toLog(logId)
+            data = ctx.toLog(logId)
         )
         ctx.state = MeterReadingState.FAILING
         ctx.errors.add(e.asMkdError())

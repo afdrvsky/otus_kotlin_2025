@@ -11,4 +11,5 @@ enum class MeterReadingStubs {
     BAD_APARTMENT_ID,
     BAD_DATE_TIME,
     CANNOT_DELETE,
+    DB_ERROR,
 }
