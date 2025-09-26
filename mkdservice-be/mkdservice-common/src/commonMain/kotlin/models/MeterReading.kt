@@ -7,4 +7,12 @@ data class MeterReading(
     var unit: MeterReadingUnit = MeterReadingUnit.NONE,
     var meterId: MeterId = MeterId.NONE,
     var apartmentId: ApartmentId = ApartmentId.NONE,
-)
+) {
+    fun deepCopy(): MeterReading = copy()
+
+    fun isEmpty() = this == NONE
+
+    companion object {
+        private val NONE = MeterReading()
+    }
+}

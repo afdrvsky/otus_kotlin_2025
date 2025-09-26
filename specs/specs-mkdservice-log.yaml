@@ -1,0 +1,100 @@
+openapi: 3.0.4
+info:
+  title: Mkdservice log models
+  description: Log models for logging services of mkdservice
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+paths: {}
+
+components:
+  schemas:
+    CommonLogModel:
+      title: Общая модель лога
+      description: Общая модель лога для всех микросервисов системы
+      type: object
+      properties:
+        messageTime:
+          type: string
+        logId:
+          type: string
+        source:
+          type: string
+        meter:
+          $ref: '#/components/schemas/MkdLogModel'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorLogModel'
+
+    MkdLogModel:
+      title: Модель лога для микросервиса Mkdservice
+      type: object
+      properties:
+        requestId:
+          type: string
+        operation:
+          $ref: '#/components/schemas/MeterLogOperation'
+        requestMeter:
+          $ref: '#/components/schemas/MeterLog'
+        responseMeter:
+          $ref: '#/components/schemas/MeterLog'
+
+    MeterLogOperation:
+      type: string
+      enum:
+        - create
+        - read
+        - update
+        - delete
+        - init
+        - finish
+
+    ErrorLogModel:
+      title: Модель лога для ошибки
+      type: object
+      properties:
+        message:
+          type: string
+        field:
+          type: string
+        code:
+          type: string
+        level:
+          type: string
+
+    MeterLogModel:
+      title: Модель лога для ошибки
+      type: object
+      properties:
+        message:
+          type: string
+        field:
+          type: string
+        code:
+          type: string
+        level:
+          type: string
+
+    MeterLog:
+      title: Модель лога для показаний приборов учета
+      type: object
+      properties:
+        id:
+          type: string
+        dateTime:
+          type: string
+        amount:
+          type: string
+        unit:
+          type: string
+        meterId:
+          type: string
+        apartmentId:
+          type: string
+        permissions:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
