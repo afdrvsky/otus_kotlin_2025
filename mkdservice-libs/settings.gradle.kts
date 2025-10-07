@@ -26,4 +26,5 @@ plugins {
 
 include(":mkdservice-lib-logging-common")
 include(":mkdservice-lib-logging-kermit")
+include(":mkdservice-lib-cor")
 
