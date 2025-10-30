@@ -26,6 +26,7 @@ abstract class ScenarioCreateDeleteV1(
         val delObj = someDeleteMeter
         val resCreate = client.sendAndReceive(
             "meter/create", MeterReadingCreateRequest(
+                requestType = "create",
                 debug = debug,
                 meter = obj,
             )
@@ -41,6 +42,7 @@ abstract class ScenarioCreateDeleteV1(
 
         val resDelete = client.sendAndReceive(
             "meter/delete", MeterDeleteRequest(
+                requestType = "delete",
                 debug = debug,
                 meter = delObj
             )

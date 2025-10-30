@@ -21,9 +21,9 @@ fun validationAmountEmpty(command: MeterCommand, processor: MkdMeterProcessor) =
         workMode = MeterWorkMode.TEST,
         meterReadingRequest = MeterReading(
             amount = Amount(""),
-            meterId = MeterId(2),
+            meterId = MeterId("2"),
             unit = MeterReadingUnit.M3,
-            apartmentId = ApartmentId(3),
+            apartmentId = ApartmentId("3"),
         ),
     )
     processor.exec(ctx)

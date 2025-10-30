@@ -30,6 +30,7 @@ abstract class ScenarioUpdateV1(
         val delObj = someDeleteMeter
         val resCreate = client.sendAndReceive(
             "meter/create", MeterReadingCreateRequest(
+                requestType = "create",
                 debug = debug,
                 meter = obj,
             )
@@ -46,11 +47,13 @@ abstract class ScenarioUpdateV1(
         val uObj = MeterUpdateObject(
             amount = cObj.amount,
             unit = cObj.unit,
-            meter = 1,
+            id = "1",
+            lock = cObj.lock,
         )
         val resUpdate = client.sendAndReceive(
             "meter/update",
             MeterUpdateRequest(
+                requestType = "update",
                 debug = debug,
                 meter = uObj,
             )
@@ -61,13 +64,14 @@ abstract class ScenarioUpdateV1(
         val ruObj: MeterResponseObject = resUpdate.meter ?: fail("No meter in Update response")
         assertEquals(uObj.amount, ruObj.amount)
         assertEquals(uObj.unit, ruObj.unit)
-        assertEquals(uObj.meter, ruObj.id)
+        assertEquals(uObj.id, ruObj.id)
         assertNotNull( ruObj.apartmentId)
         assertNotNull(ruObj.id)
         assertNotNull(ruObj.dateTime)
 
         val resDelete = client.sendAndReceive(
             "meter/delete", MeterDeleteRequest(
+                requestType = "delete",
                 debug = debug,
                 meter = delObj
             )

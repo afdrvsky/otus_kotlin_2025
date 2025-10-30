@@ -62,9 +62,6 @@ fun Application.module(
     }
 
     routing {
-        get("/") {
-            call.respondText("Hello, world!")
-        }
         route("v1") {
             install(ContentNegotiation) {
                 json(apiV1Mapper)

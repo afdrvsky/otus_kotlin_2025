@@ -12,11 +12,12 @@ fun MeterReadingContext.fromTransport(request: IRequest) = when (request) {
     is MeterDeleteRequest -> fromTransport(request)
 }
 
-private fun Int?.toMeterReadingId() = this?.let { MeterReadingId(it) } ?: MeterReadingId.NONE
-private fun Int?.toMeterId() = this?.let { MeterId(it) } ?: MeterId.NONE
+private fun String?.toMeterReadingId() = this?.let { MeterReadingId(it) } ?: MeterReadingId.NONE
+private fun String?.toMeterId() = this?.let { MeterId(it) } ?: MeterId.NONE
 private fun String?.toAmount() = this?.let { Amount(it) } ?: Amount.NONE
 private fun String?.toUnit() = this?.let { MeterReadingUnit.valueOf(it) } ?: MeterReadingUnit.NONE
-private fun Int?.toApartmentId() = this?.let { ApartmentId(it) } ?: ApartmentId.NONE
+private fun String?.toApartmentId() = this?.let { ApartmentId(it) } ?: ApartmentId.NONE
+private fun String?.toLock() = this?.let { MeterReadingLock(it) } ?: MeterReadingLock.NONE
 
 private fun MeterReadingReadObject?.toInternal() = if (this != null) {
     MeterReading(
@@ -77,6 +78,7 @@ fun MeterReadingContext.fromTransport(request: MeterDeleteRequest) {
 private fun MeterDeleteObject?.toInternal(): MeterReading = if (this != null) {
     MeterReading(
         id = id.toMeterReadingId(),
+        lock = lock.toLock()
     )
 } else {
     MeterReading()
@@ -90,7 +92,8 @@ private fun MeterCreateObject.toInternal(): MeterReading = MeterReading(
 )
 
 private fun MeterUpdateObject.toInternal(): MeterReading = MeterReading(
-    id = this.meter.toMeterReadingId(),
+    id = this.id.toMeterReadingId(),
     amount = this.amount.toAmount(),
     unit = this.unit.toUnit(),
+    lock = lock.toLock(),
 )

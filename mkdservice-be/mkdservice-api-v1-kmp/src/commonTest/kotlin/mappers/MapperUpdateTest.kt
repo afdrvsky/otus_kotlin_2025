@@ -46,7 +46,7 @@ class MapperUpdateTest {
                     message = "wrong amount"
                 )
             ),
-            meterReadingResponse = MeterReadingStub.get()
+            metersReadingResponse = listOf(MeterReadingStub.get())
         )
 
         val req = context.toTransportMeter() as MeterUpdateResponse

@@ -46,12 +46,12 @@ class MapperReadTest {
                     message = "wrong amount"
                 )
             ),
-            meterReadingResponse = MeterReadingStub.get()
+            metersReadingResponse = listOf(MeterReadingStub.get())
         )
 
         val req = context.toTransportMeter() as MeterReadResponse
 
-        assertEquals(req.meter, MeterReadingStub.get().toTransportMeter())
+        assertEquals(req.meters?.first(), MeterReadingStub.get().toTransportMeter())
         assertEquals(1, req.errors?.size)
         assertEquals("err", req.errors?.firstOrNull()?.code)
         assertEquals("request", req.errors?.firstOrNull()?.group)

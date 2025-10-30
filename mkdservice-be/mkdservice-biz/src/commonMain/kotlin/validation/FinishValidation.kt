@@ -9,6 +9,6 @@ fun ICorChainDsl<MeterReadingContext>.finishMeterValidation(title: String) = wor
     this.title = title
     on { state == MeterReadingState.RUNNING }
     handle {
-        meterValidating = meterValidating
+        meterReadingValidated = meterReadingValidating
     }
 }

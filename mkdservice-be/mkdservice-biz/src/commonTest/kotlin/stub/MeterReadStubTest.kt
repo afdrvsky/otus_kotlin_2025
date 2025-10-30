@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 class MeterReadStubTest {
 
     private val processor = MkdMeterProcessor()
-    val meterReadingId = MeterReadingId(123)
+    val meterReadingId = MeterReadingId("123")
 
     @Test
     fun read() = runTest {

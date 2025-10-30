@@ -18,7 +18,7 @@ import kotlinx.datetime.Clock
 fun MeterReadingContext.toLog(logId: String) = CommonLogModel(
     messageTime = Clock.System.now().toString(),
     logId = logId,
-    source = "ok-marketplace",
+    source = "mkdservice",
     meter = toMeterLog(),
     errors = errors.map { it.toLog() },
 )

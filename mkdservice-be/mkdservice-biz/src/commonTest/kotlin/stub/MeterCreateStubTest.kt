@@ -19,12 +19,12 @@ import kotlin.test.assertEquals
 class MeterCreateStubTest {
 
     private val processor = MkdMeterProcessor()
-    val id = MeterReadingId(id = 1)
+    val id = MeterReadingId(id = "1")
     val amount = Amount("150.08")
-    val meterId = MeterId(3)
+    val meterId = MeterId("3")
     val dateTime = "2025-07-02T00:00:00.000Z"
     val unit = MeterReadingUnit.M3
-    val apartmentId = ApartmentId(5)
+    val apartmentId = ApartmentId("5")
 
     @Test
     fun create() = runTest {

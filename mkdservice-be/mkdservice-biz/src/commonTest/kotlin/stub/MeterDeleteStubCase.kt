@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 class MeterDeleteStubCase {
 
     private val processor = MkdMeterProcessor()
-    val id = MeterReadingId(id = 1212)
+    val id = MeterReadingId(id = "1212")
 
     @Test
     fun delete() = runTest {

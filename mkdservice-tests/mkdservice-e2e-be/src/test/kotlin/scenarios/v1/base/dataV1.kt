@@ -5,11 +5,12 @@ import com.fedorovsky.mkdservice.api.v1.models.MeterDeleteObject
 
 val someCreateMeter = MeterCreateObject(
     amount = "55.9",
-    unit = "m3",
-    meterId = 2,
-    apartmentId = 3
+    unit = "M3",
+    meterId = "2",
+    apartmentId = "3"
 )
 
 val someDeleteMeter = MeterDeleteObject(
-    id = 1
+    id = "1",
+    lock = "2"
 )
