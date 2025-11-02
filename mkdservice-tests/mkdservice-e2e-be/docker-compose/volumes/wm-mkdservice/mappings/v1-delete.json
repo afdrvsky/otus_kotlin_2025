@@ -9,7 +9,7 @@
       "responseType": "delete",
       "result": "success",
       "meter": {
-        "id": 1
+        "id": "1"
       }
     },
     "headers": {

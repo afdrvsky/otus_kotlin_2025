@@ -9,7 +9,7 @@ import com.fedorovsky.mkdservice.cor.worker
 
 fun ICorChainDsl<MeterReadingContext>.validateIdNotEmpty(title: String) = worker {
     this.title = title
-    on { meterValidating.id == MeterReadingId.NONE }
+    on { meterReadingValidating.id.asString().isEmpty() }
     handle {
         fail(
             errorValidation(

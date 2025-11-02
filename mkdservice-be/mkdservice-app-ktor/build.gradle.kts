@@ -1,6 +1,3 @@
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
-import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 import io.ktor.plugin.features.*
 import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 
@@ -9,8 +6,7 @@ plugins {
     id("build-kmp")
 //    id("io.ktor.plugin")
     alias(libs.plugins.ktor)
-//    id("com.bmuschko.docker-remote-api") - Универсальный плагин для докера
-    alias(libs.plugins.muschko.remote)
+    id("build-docker")
 }
 
 application {
@@ -29,6 +25,14 @@ ktor {
 jib {
     container.mainClass = application.mainClass.get()
 }
+
+docker {
+    buildContext = project.layout.buildDirectory.dir("docker-x64").get().toString()
+    imageName = "${project.name}-x64"
+    dockerFile = "Dockerfile"
+    imageTag = "${project.version}"
+}
+
 
 kotlin {
     // !!! Обязательно. Иначе не проходит сборка толстых джанриков в shadowJar
@@ -71,6 +75,12 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.serialization.json)
 
+                // DB
+                implementation(libs.uuid)
+                implementation(projects.mkdserviceRepoCommon)
+//                implementation(projects.mkdserviceRepoStubs)
+                implementation(projects.mkdserviceRepoInmemory)
+
                 // logging
 //                implementation(project(":ok-marketplace-api-log1"))
                 implementation("com.fedorovsky.mkdservice.libs:mkdservice-lib-logging-common")
@@ -100,6 +110,7 @@ kotlin {
                 implementation(libs.ktor.server.headers.default)
 
                 implementation(libs.logback)
+                implementation(projects.mkdserviceRepoCassandra)
 
                 // transport models
 //                implementation(project(":ok-marketplace-api-v1-jackson"))
@@ -126,52 +137,25 @@ tasks {
     // Если ошибка: "Entry application.yaml is a duplicate but no duplicate handling strategy has been set."
     // Возникает из-за наличия файлов как в common, так и в jvm платформе
     withType(ProcessResources::class) {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
     val linkReleaseExecutableLinuxX64 by getting(KotlinNativeLink::class)
     val nativeFileX64 = linkReleaseExecutableLinuxX64.binary.outputFile
     val linuxX64ProcessResources by getting(ProcessResources::class)
-
-    val dockerDockerfileX64 by creating(Dockerfile::class) {
+    dockerBuild {
         dependsOn(linkReleaseExecutableLinuxX64)
         dependsOn(linuxX64ProcessResources)
         group = "docker"
-        from(Dockerfile.From("ubuntu:22.04").withPlatform("linux/amd64"))
         doFirst {
             copy {
+                from("Dockerfile") //.rename { "Dockerfile" }
                 from(nativeFileX64)
                 from(linuxX64ProcessResources.destinationDir)
-                into("${this@creating.destDir.get()}")
+                println("BUILD CONTEXT: ${buildContext.get()}")
+                into(buildContext)
             }
-        }
-        copyFile(nativeFileX64.name, "/app/")
-        copyFile("application.yaml", "/app/")
-        exposePort(8080)
-        workingDir("/app")
-        entryPoint("/app/${nativeFileX64.name}", "-config=./application.yaml")
-    }
-    val registryUser: String? = System.getenv("CONTAINER_REGISTRY_USER")
-    val registryPass: String? = System.getenv("CONTAINER_REGISTRY_PASS")
-    val registryHost: String? = System.getenv("CONTAINER_REGISTRY_HOST")
-    val registryPref: String? = System.getenv("CONTAINER_REGISTRY_PREF")
-    val imageName = registryPref?.let { "$it/${project.name}" } ?: project.name
-
-    val dockerBuildX64Image by creating(DockerBuildImage::class) {
-        group = "docker"
-        dependsOn(dockerDockerfileX64)
-        images.add("$imageName-x64:${rootProject.version}")
-        images.add("$imageName-x64:latest")
-        platform.set("linux/amd64")
-    }
-    val dockerPushX64Image by creating(DockerPushImage::class) {
-        group = "docker"
-        dependsOn(dockerBuildX64Image)
-        images.set(dockerBuildX64Image.images)
-        registryCredentials {
-            username.set(registryUser)
-            password.set(registryPass)
-            url.set("https://$registryHost/v1/")
         }
     }
 }
+

@@ -39,8 +39,8 @@ class V1MeterStubApiTest {
             meter = MeterCreateObject(
                 amount = "100.01",
                 unit = "m3",
-                meterId = 3,
-                apartmentId = 1,
+                meterId = "3",
+                apartmentId = "1",
             ),
             debug = MeterDebug(
                 mode = MeterRequestDebugMode.STUB,
@@ -50,14 +50,14 @@ class V1MeterStubApiTest {
     ) { response ->
         val responseObj = response.body<MeterCreateResponse>()
         assertEquals(200, response.status.value)
-        assertEquals(1, responseObj.meter?.apartmentId)
+        assertEquals("1", responseObj.meter?.apartmentId)
     }
 
     @Test
     fun read() = v1TestApplication(
         func = "read",
         request = MeterReadingReadRequest(
-            meter = MeterReadingReadObject(1),
+            meter = MeterReadingReadObject("1"),
             debug = MeterDebug(
                 mode = MeterRequestDebugMode.STUB,
                 stub = MeterRequestDebugStubs.SUCCESS
@@ -66,7 +66,7 @@ class V1MeterStubApiTest {
     ) { response ->
         val responseObj = response.body<MeterReadResponse>()
         assertEquals(200, response.status.value)
-        assertEquals(3, responseObj.meter?.meterId)
+        assertEquals("3", responseObj.meter?.meterId)
     }
 
     @Test
@@ -76,7 +76,7 @@ class V1MeterStubApiTest {
             meter = MeterUpdateObject(
                 amount = "100.01",
                 unit = "m3",
-                meter = 1
+                id = "1"
             ),
             debug = MeterDebug(
                 mode = MeterRequestDebugMode.STUB,
@@ -86,7 +86,7 @@ class V1MeterStubApiTest {
     ) { response ->
         val responseObj = response.body<MeterUpdateResponse>()
         assertEquals(200, response.status.value)
-        assertEquals(1, responseObj.meter?.id)
+        assertEquals("1", responseObj.meter?.id)
     }
 
     @Test
@@ -94,7 +94,7 @@ class V1MeterStubApiTest {
         func = "delete",
         request = MeterDeleteRequest(
             meter = MeterDeleteObject(
-                id = 1,
+                id = "1",
             ),
             debug = MeterDebug(
                 mode = MeterRequestDebugMode.STUB,
@@ -104,7 +104,7 @@ class V1MeterStubApiTest {
     ) { response ->
         val responseObj = response.body<MeterDeleteResponse>()
         assertEquals(200, response.status.value)
-        assertEquals(1, responseObj.meter?.id)
+        assertEquals("1", responseObj.meter?.id)
     }
 
     private inline fun <reified T: IRequest> v1TestApplication(

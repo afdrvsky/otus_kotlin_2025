@@ -7,6 +7,8 @@ dependencies {
 
     implementation("com.fedorovsky.mkdservice:mkdservice-api-v1-kmp")
     implementation("com.fedorovsky.mkdservice:mkdservice-stubs")
+    implementation(libs.jackson.kotlin)
+    implementation(libs.jackson.datatype)
 
     testImplementation(kotlin("test-junit5"))
 

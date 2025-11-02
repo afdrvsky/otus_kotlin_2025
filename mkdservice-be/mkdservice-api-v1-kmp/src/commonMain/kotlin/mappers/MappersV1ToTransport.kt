@@ -28,7 +28,7 @@ fun MeterReadingContext.toTransportUpdate() = MeterUpdateResponse(
 fun MeterReadingContext.toTransportRead() = MeterReadResponse(
     result = state.toResult(),
     errors = errors.toTransportErrors(),
-    meter = meterReadingResponse.toTransportMeter()
+    meters = metersReadingResponse.toTransportMeter()
 )
 
 fun MeterReadingContext.toTransportDelete() = MeterDeleteResponse(
@@ -37,16 +37,22 @@ fun MeterReadingContext.toTransportDelete() = MeterDeleteResponse(
     meter = meterReadingResponse.toTransportMeter()
 )
 
+fun List<MeterReading>.toTransportMeter(): List<MeterResponseObject>? = this
+    .map { it.toTransportMeter() }
+    .toList()
+    .takeIf { it.isNotEmpty() }
+
 fun MeterReading.toTransportMeter(): MeterResponseObject = MeterResponseObject(
     id = id.toTransportMeter(),
     amount = amount.takeIf { it != Amount.NONE }?.asString(),
     unit = unit.takeIf { it != MeterReadingUnit.NONE }?.toString(),
     dateTime = dateTime.takeIf { it.isNotBlank() },
-    meterId = meterId.takeIf { it != MeterId.NONE }?.asInt(),
-    apartmentId = apartmentId.takeIf { it != ApartmentId.NONE }?.asInt(),
+    meterId = meterId.takeIf { it != MeterId.NONE }?.asString(),
+    apartmentId = apartmentId.takeIf { it != ApartmentId.NONE }?.asString(),
+    lock = lock.takeIf { it != MeterReadingLock.NONE }?.asString()
 )
 
-internal fun MeterReadingId.toTransportMeter() = takeIf { it != MeterReadingId.NONE }?.asInt()
+internal fun MeterReadingId.toTransportMeter() = takeIf { it != MeterReadingId.NONE }?.asString()
 
 private fun List<MeterError>.toTransportErrors(): List<com.fedorovsky.mkdservice.api.v1.models.Error>? = this
     .map { it.toTransportMeter() }

@@ -5,6 +5,7 @@ package com.fedorovsky.mkdservice.api.v1
 import com.fedorovsky.mkdservice.api.v1.models.IRequest
 import com.fedorovsky.mkdservice.api.v1.models.IResponse
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 

@@ -22,7 +22,7 @@ Mkdservice - веб-приложение (с логикой на бекенде)
 
 ### Плагины Gradle сборки проекта
 
-1. [build-plugin](build-plugin) Модуль с плагинами
+1. [build-plugins](build-plugin) Модуль с плагинами
 2. [BuildPluginJvm](build-plugin/src/main/kotlin/BuildPluginJvm.kt) Плагин для сборки проектов JVM
 2. [BuildPluginMultiplarform](build-plugin/src/main/kotlin/BuildPluginMultiplatform.kt) Плагин для сборки
    мультиплатформенных проектов

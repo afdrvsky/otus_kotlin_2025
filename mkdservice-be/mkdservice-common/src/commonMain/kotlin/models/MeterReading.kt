@@ -7,6 +7,7 @@ data class MeterReading(
     var unit: MeterReadingUnit = MeterReadingUnit.NONE,
     var meterId: MeterId = MeterId.NONE,
     var apartmentId: ApartmentId = ApartmentId.NONE,
+    var lock: MeterReadingLock = MeterReadingLock.NONE,
 ) {
     fun deepCopy(): MeterReading = copy()
 

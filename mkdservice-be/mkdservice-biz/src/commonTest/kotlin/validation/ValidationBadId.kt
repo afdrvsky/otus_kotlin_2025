@@ -7,6 +7,7 @@ import com.fedorovsky.mkdservice.common.models.MeterReading
 import com.fedorovsky.mkdservice.common.models.MeterReadingId
 import com.fedorovsky.mkdservice.common.models.MeterReadingState
 import com.fedorovsky.mkdservice.common.models.MeterWorkMode
+import com.fedorovsky.mkdservice.stubs.MeterReadingStub
 import kotlinx.coroutines.test.runTest
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -17,11 +18,10 @@ fun validationIdCorrect(command: MeterCommand, processor: MkdMeterProcessor) = r
         command = command,
         state = MeterReadingState.NONE,
         workMode = MeterWorkMode.TEST,
-        meterReadingRequest = MeterReading(
-            id = MeterReadingId(-100),
-        ),
+        meterReadingRequest = MeterReadingStub.get(),
     )
     processor.exec(ctx)
+    print(ctx)
     assertEquals(0, ctx.errors.size)
     assertNotEquals(MeterReadingState.FAILING, ctx.state)
 }

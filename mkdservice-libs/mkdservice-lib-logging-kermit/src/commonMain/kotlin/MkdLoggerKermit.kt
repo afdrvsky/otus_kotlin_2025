@@ -21,7 +21,7 @@ fun mkdLoggerKermit(loggerId: String): IMkdLogWrapper {
 }
 
 @Suppress("unused")
-fun mpLoggerKermit(cls: KClass<*>): IMkdLogWrapper {
+fun mkdLoggerKermit(cls: KClass<*>): IMkdLogWrapper {
     val logger = Logger(
         config = StaticConfig(
             minSeverity = Severity.Info,

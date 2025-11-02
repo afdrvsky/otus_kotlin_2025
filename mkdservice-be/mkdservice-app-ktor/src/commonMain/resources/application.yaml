@@ -24,3 +24,29 @@ ktor:
 #  logger: socket
 #  socketLogger:
 #    port: 24224
+
+# Пример конфига для RabbitMQ
+#rabbit:
+#  enable: false
+#  host: localhost
+#  port: 5672
+##  username: guest
+##  password: guest
+#  v1:
+#    keyIn: mkpl-ads-v1-in
+#    keyOut: mkpl-ads-v1-out
+#    exchange: mkpl-ads-v1-exchange
+#    queue: mkpl-ads-v1-queue
+#    consumerTag: "mkpl-ads-v1-consumer"
+#    exchangeType: direct
+mkdservice:
+  repository:
+    test: "inmemory"
+    prod: "$DB_TYPE_PROD:cassandra"
+    cassandra:
+      keyspace: "$MKPLADS_KEYSPACE:mkdservice"
+      host: "$MKPLADS_HOST:cassandra"
+      port: "$MKPLADS_PORT:9042"
+      user: "$MKPLADS_USER:cassandra"
+      pass: "$MKPLADS_PASS:cassandra"
+

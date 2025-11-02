@@ -1,7 +1,7 @@
 package com.fedorovsky.mkdservice.api.v1
 
 import com.fedorovsky.mkdservice.api.v1.models.*
-import com.fedorovsky.mkdservice.common.models.MeterReadingUnit
+import kotlinx.serialization.encodeToString
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -14,9 +14,9 @@ class RequestV1SerializationTest {
         ),
         meter = MeterCreateObject(
             amount = "100.01",
-            unit = MeterReadingUnit.M3.toString(),
-            meterId = 1,
-            apartmentId = 10,
+            unit = "m3",
+            meterId = "1",
+            apartmentId = "10",
         )
     )
 
@@ -28,8 +28,8 @@ class RequestV1SerializationTest {
 
         assertContains(json, Regex("\"amount\":\\s*\"100.01\""))
         assertContains(json, Regex("\"unit\":\\s*\"m3\""))
-        assertContains(json, Regex("\"meterId\":\\s*1"))
-        assertContains(json, Regex("\"apartmentId\":\\s*10"))
+        assertContains(json, Regex("\"meterId\":\\s*\"1\""))
+        assertContains(json, Regex("\"apartmentId\":\\s*\"10\""))
         assertContains(json, Regex("\"mode\":\\s*\"stub\""))
         assertContains(json, Regex("\"stub\":\\s*\"badAmount\""))
         assertContains(json, Regex("\"requestType\":\\s*\"create\""))

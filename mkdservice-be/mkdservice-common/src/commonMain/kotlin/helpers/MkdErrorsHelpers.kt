@@ -18,11 +18,18 @@ fun Throwable.asMkdError(
 )
 
 inline fun MeterReadingContext.addError(vararg error: MeterError) = errors.addAll(error)
+inline fun MeterReadingContext.addErrors(error: Collection<MeterError>) = errors.addAll(error)
 
 inline fun MeterReadingContext.fail(error: MeterError) {
     addError(error)
     state = MeterReadingState.FAILING
 }
+
+inline fun MeterReadingContext.fail(errors: Collection<MeterError>) {
+    addErrors(errors)
+    state = MeterReadingState.FAILING
+}
+
 
 inline fun errorValidation(
     field: String,
@@ -39,4 +46,16 @@ inline fun errorValidation(
     group = "validation",
     message = "Validation error for field $field: $description",
     level = level,
+)
+
+inline fun errorSystem(
+    violationCode: String,
+    level: LogLevel = LogLevel.ERROR,
+    e: Throwable,
+) = MeterError(
+    code = "system-$violationCode",
+    group = "system",
+    message = "System error occurred. Our stuff has been informed, please retry later",
+    level = level,
+    exception = e
 )
