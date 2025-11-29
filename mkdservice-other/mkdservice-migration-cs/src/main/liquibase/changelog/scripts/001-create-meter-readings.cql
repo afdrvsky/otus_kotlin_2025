@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS mkdservice_meter_readings (
     unit text,
     date_time text,
     meter_id text,
-    appointment_id text,
+    apartment_id text,
     lock text
 );
 

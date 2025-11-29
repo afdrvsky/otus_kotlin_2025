@@ -13,6 +13,7 @@ kotlin {
                 implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.serialization.json)
                 api("com.fedorovsky.mkdservice.libs:mkdservice-lib-logging-common")
+                api(libs.mkd.state.common)
             }
         }
         commonTest {

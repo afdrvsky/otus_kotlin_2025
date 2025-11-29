@@ -1,14 +1,21 @@
 package com.fedorovsky.mkdservice.common
 
 import com.fedorovsky.mkdservice.common.models.*
+import com.fedorovsky.mkdservice.common.permissions.MkdPrincipalModel
+import com.fedorovsky.mkdservice.common.permissions.MkdUserPermissions
 import com.fedorovsky.mkdservice.common.repo.IRepoMeter
 import com.fedorovsky.mkdservice.common.stubs.MeterReadingStubs
+import com.fedorovsky.mkdservice.states.common.models.MkdStateRq
 import kotlinx.datetime.Instant
 
 data class MeterReadingContext(
     var command: MeterCommand = MeterCommand.NONE,
     var state: MeterReadingState = MeterReadingState.NONE,
     val errors: MutableList<MeterError> = mutableListOf(),
+
+    var principal: MkdPrincipalModel = MkdPrincipalModel.NONE,
+    val permissionsChain: MutableSet<MkdUserPermissions> = mutableSetOf(),
+    var permitted: Boolean = false,
 
     var corSettings: MkdCorSettings = MkdCorSettings(),
     var workMode: MeterWorkMode = MeterWorkMode.PROD,
@@ -31,4 +38,7 @@ data class MeterReadingContext(
     var meterReadingRepoPrepare: MeterReading = MeterReading(),
     var meterReadingRepoDone: MeterReading = MeterReading(),
     var metersReadingRepoDone: List<MeterReading> = listOf(),
+
+    // Запрашиваем статус из модуля статистики
+    var meterState: MkdStateRq = MkdStateRq(),
 )

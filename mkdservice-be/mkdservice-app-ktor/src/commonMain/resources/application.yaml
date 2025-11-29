@@ -15,7 +15,7 @@ ktor:
 #    - "http://127.0.0.1:8080/v1"
 #    - "http://0.0.0.0:8080/v1"
 #    - "http://192.168.0.182:8080/v1"
-  logger: kmp
+  logger: logback
 #  # Логирование типа socket требует установки в fluent-bit.conf
 #  # [INPUT]
 #  # Name    TCP # Вот здесь нужно поменять!
@@ -45,7 +45,7 @@ mkdservice:
     prod: "$DB_TYPE_PROD:cassandra"
     cassandra:
       keyspace: "$MKPLADS_KEYSPACE:mkdservice"
-      host: "$MKPLADS_HOST:cassandra"
+      host: "$MKPLADS_HOST:localhost"
       port: "$MKPLADS_PORT:9042"
       user: "$MKPLADS_USER:cassandra"
       pass: "$MKPLADS_PASS:cassandra"

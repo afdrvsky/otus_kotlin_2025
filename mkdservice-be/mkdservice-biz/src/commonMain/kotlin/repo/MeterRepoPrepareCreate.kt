@@ -11,6 +11,6 @@ fun ICorChainDsl<MeterReadingContext>.repoPrepareCreate(title: String) = worker 
     on { state == MeterReadingState.RUNNING }
     handle {
         meterReadingRepoPrepare = meterReadingValidated.deepCopy()
-        //TODO будет реализовано в занятии по управлению пользвателями
+//        meterReadingRepoPrepare.ownerId = principal.id
     }
 }

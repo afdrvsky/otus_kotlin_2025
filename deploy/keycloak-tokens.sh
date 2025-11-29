@@ -1,9 +1,10 @@
 #!/bin/bash
 
-KCHOST=http://localhost:8080
-REALM=otus-marketplace
-CLIENT_ID=otus-marketplace-service
-UNAME=otus-test
+KCHOST=http://localhost:8081
+#KCHOST=http://localhost:32782
+REALM=mkdservice
+CLIENT_ID=mkdservice-service
+UNAME=mkd-test
 PASSWORD=otus
 
 # shellcheck disable=SC2006
@@ -13,7 +14,7 @@ PASSWORD=otus
 #  -d "grant_type=password" \
 #  "$KCHOST/auth/realms/$REALM/protocol/openid-connect/token"  | jq -r '.access_token'`
 
-ACCESS_TOKEN=`curl \
+ACCESS_TOKEN=`curl -XPOST \
   -d "client_id=$CLIENT_ID" \
   -d "username=$UNAME" \
   -d "password=$PASSWORD" \

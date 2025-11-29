@@ -61,15 +61,15 @@ kotlin {
 //                В Application.main добавить `install(DoubleReceive)`
 //                implementation("io.ktor:ktor-server-double-receive:${libs.versions.ktor.get()}")
 
-                implementation(project(":mkdservice-common"))
-                implementation(project(":mkdservice-app-common"))
-                implementation(project(":mkdservice-biz"))
+                implementation(projects.mkdserviceCommon)
+                implementation(projects.mkdserviceAppCommon)
+                implementation(projects.mkdserviceBiz)
 
                 // v1 api
-                implementation(project(":mkdservice-api-v1-kmp"))
+                implementation(projects.mkdserviceApiV1Kmp)
 
                 // Stubs
-                implementation(project(":mkdservice-stubs"))
+                implementation(projects.mkdserviceStubs)
 
                 implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.serialization.json)
@@ -81,11 +81,14 @@ kotlin {
 //                implementation(projects.mkdserviceRepoStubs)
                 implementation(projects.mkdserviceRepoInmemory)
 
+                // States
+                implementation(libs.mkd.state.common)
+                implementation(libs.mkd.state.biz)
+
                 // logging
 //                implementation(project(":ok-marketplace-api-log1"))
                 implementation("com.fedorovsky.mkdservice.libs:mkdservice-lib-logging-common")
                 implementation("com.fedorovsky.mkdservice.libs:mkdservice-lib-logging-kermit")
-//                implementation("ru.otus.otuskotlin.marketplace.libs:ok-marketplace-lib-logging-socket")
             }
         }
 
@@ -116,8 +119,7 @@ kotlin {
 //                implementation(project(":ok-marketplace-api-v1-jackson"))
 //                implementation(project(":ok-marketplace-api-v1-mappers"))
 //
-//                implementation("ru.otus.otuskotlin.marketplace.libs:ok-marketplace-lib-logging-logback")
-
+                implementation("com.fedorovsky.mkdservice.libs:mkdservice-lib-logging-logback")
             }
         }
 

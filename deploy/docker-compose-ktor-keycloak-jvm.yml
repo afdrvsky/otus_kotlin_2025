@@ -1,0 +1,179 @@
+services:
+  app:
+    image: mkdservice-app-ktor:0.0.1
+    ports:
+      - "8080"
+      - "5005:5005"
+    environment:
+      DB_TYPE_PROD: "cassandra"
+      MKPLADS_HOST: "cassandra"
+      MKPLADS_PORT: 9042
+      MKPLADS_KEYSPACE: "mkdservice"
+      MKPLADS_USER: "cassandra"
+      MKPLADS_PASS: "cassandra"
+      MKPLADS_LOGGER: "kmp"
+      LOGS_FB_HOSTS: "fluent-bit"
+      LOGS_FB_PORT: "24224"
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    depends_on:
+      cassandra:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+      cassandra-init:
+        condition: service_completed_successfully
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "app.logs"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/" ]
+
+  frontend:
+    build:
+      context: ../ # путь к папке с React + Dockerfile
+      dockerfile: ./deploy/volumes/frontend/Dockerfile
+    ports:
+      - "3000:80"
+
+  cassandra:
+    image: cassandra:5.0.3
+    ports:
+      - "9042:9042"
+    expose:
+      - "9042"
+    environment:
+      CASSANDRA_DC: "dc1"
+      CASSANDRA_ENDPOINT_SNITCH: "GossipingPropertyFileSnitch"
+    healthcheck:
+      test: [ "CMD-SHELL", "[ $$(nodetool statusgossip) = running ]" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ./volumes/cassandra.yaml:/opt/cassandra/conf/cassandra.yaml
+
+  cassandra-init:
+    image: cassandra:5.0.3
+    command: |
+      cqlsh cassandra -e "CREATE KEYSPACE IF NOT EXISTS mkdservice WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'dc1' : 1 };"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+
+  liquibase:
+    image: "mkdservice-migration-cs:0.1.0"
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:cassandra://cassandra:9042/mkdservice?ssl=false&compliancemode=Liquibase&localdatacenter=dc1
+      LIQUIBASE_COMMAND_USERNAME: cassandra
+      LIQUIBASE_COMMAND_PASSWORD: cassandra
+      LIQUIBASE_LIQUIBASE_SCHEMA_NAME: mkdservice
+    depends_on:
+      cassandra-init:
+        condition: service_completed_successfully
+
+  envoy:
+    image: envoyproxy/envoy:v1.29.0  # Use the official Envoy proxy image
+    volumes:
+      - ./volumes/envoy/envoy.yaml:/etc/envoy/envoy.yaml  # Mount your Envoy configuration file
+    #      - ./envoy/certs:/etc/envoy/certs  # Mount your TLS certificates
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/8080' || exit 1" ]
+    depends_on:
+      keycloak:
+        condition: service_healthy
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.4
+    ports:
+      - "8081:8080"
+    volumes:
+      #      - ./keycloak:/tmp
+      - ./volumes/keycloak/import:/opt/keycloak/data/import
+    #      - ./keycloak/standalone.xml:/opt/jboss/keycloak/standalone/configuration/standalone.xml
+    #      - ./keycloak/certs/keycloak.jks:/etc/x509/https/keystore  # Mount your Keycloak keystore
+    environment:
+      KEYCLOAK_USER: otus
+      KEYCLOAK_PASSWORD: otus
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_IMPORT: "./volumes/keycloak/realm-export.json"
+      KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME_URL: "http://localhost:8080/"
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command:
+      - start-dev
+      - --import-realm
+      - --hostname-strict
+      - "false"
+      - --proxy-headers
+      - forwarded
+
+  fluent-bit:
+    #    Logstash: 2GB RAM 400MB Docker
+    #    fluent-bit: 30MB Docker 30MB RAM
+    container_name: fluent-bit
+    image: fluent/fluent-bit
+    ports:
+      # необходимо открыть порты, которые используются плагином forward
+      - "24224:24224"
+      - "24224:24224/udp"
+      - "2020:2020"
+    environment:
+      - opensearch_host=opensearch
+      - opensearch_user=admin
+      - opensearch_pass=adm-Password0
+    volumes:
+      - ./volumes/fluent-bit-etc/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./volumes/fluent-bit-etc/parsers.conf:/fluent-bit/etc/parsers.conf
+
+  opensearch:
+    container_name: opensearch
+    image: opensearchproject/opensearch:latest
+    environment:
+      - discovery.type=single-node
+      - http.port=9200
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=adm-Password0
+    ports:
+      - '9200:9200'
+      - '9600:9600'
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -ku admin:adm-Password0 https://localhost:9200/_cluster/health?pretty | grep status | grep -q '\\(green\\|yellow\\)'"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+  #    volumes:
+  #      - opensearch-data:/usr/share/opensearch/data
+
+  dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch:9200"]'
+    depends_on:
+      opensearch:
+        condition: service_healthy

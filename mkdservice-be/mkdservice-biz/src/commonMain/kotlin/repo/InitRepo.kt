@@ -5,6 +5,7 @@ import com.fedorovsky.mkdservice.common.MeterReadingContext
 import com.fedorovsky.mkdservice.common.helpers.errorSystem
 import com.fedorovsky.mkdservice.common.helpers.fail
 import com.fedorovsky.mkdservice.common.models.MeterWorkMode
+import com.fedorovsky.mkdservice.common.permissions.MkdUserGroups
 import com.fedorovsky.mkdservice.common.repo.IRepoMeter
 import com.fedorovsky.mkdservice.cor.ICorChainDsl
 import com.fedorovsky.mkdservice.cor.worker
@@ -18,6 +19,7 @@ fun ICorChainDsl<MeterReadingContext>.initRepo(title: String) = worker {
         meterReadingRepo = when {
             workMode == MeterWorkMode.TEST -> corSettings.repoTest
             workMode == MeterWorkMode.STUB -> corSettings.repoStub
+            principal.groups.contains(MkdUserGroups.TEST) -> corSettings.repoTest
             else -> corSettings.repoProd
         }
         if (workMode != MeterWorkMode.STUB && meterReadingRepo == IRepoMeter.NONE) fail(

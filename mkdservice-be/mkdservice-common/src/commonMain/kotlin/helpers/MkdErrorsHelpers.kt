@@ -1,8 +1,11 @@
 package com.fedorovsky.mkdservice.common.helpers
 
 import com.fedorovsky.mkdservice.common.MeterReadingContext
+import com.fedorovsky.mkdservice.common.models.MeterCommand
 import com.fedorovsky.mkdservice.common.models.MeterError
+import com.fedorovsky.mkdservice.common.models.MeterReadingId
 import com.fedorovsky.mkdservice.common.models.MeterReadingState
+import com.fedorovsky.mkdservice.common.permissions.MkdPrincipalModel
 import com.fedorovsky.mkdservice.logging.common.LogLevel
 
 fun Throwable.asMkdError(
@@ -58,4 +61,16 @@ inline fun errorSystem(
     message = "System error occurred. Our stuff has been informed, please retry later",
     level = level,
     exception = e
+)
+
+inline fun accessViolation(
+    principal: MkdPrincipalModel,
+    operation: MeterCommand,
+    meterReadingId: MeterReadingId = MeterReadingId.NONE,
+) = MeterError(
+    code = "access-${operation.name.lowercase()}",
+    group = "access",
+    message = "User ${principal.genericName()} (${principal.id.asString()}) is not allowed to perform operation ${operation.name}"
+            + if (meterReadingId != MeterReadingId.NONE) " on meter reading ${meterReadingId.asString()}" else "",
+    level = LogLevel.ERROR,
 )
