@@ -26,3 +26,14 @@ fun ICorChainDsl<MeterReadingContext>.repoRead(title: String) = worker {
         }
     }
 }
+
+fun ICorChainDsl<MeterReadingContext>.repoReadPrevious(title: String) = worker {
+    this.title = title
+    description = "Чтение предыдущего показания из БД"
+    on { state == MeterReadingState.RUNNING }
+    handle {
+        val request = DbMeterFilterRequest(meterReadingValidating)
+        val result: DbMetersReponseOk = meterReadingRepo.readMeter(request) as DbMetersReponseOk
+        metersReadingRepoRead = result.data
+    }
+}

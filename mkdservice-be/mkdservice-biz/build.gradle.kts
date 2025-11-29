@@ -12,6 +12,8 @@ kotlin {
                 implementation(libs.cor)
                 implementation(project(":mkdservice-common"))
                 implementation(project(":mkdservice-stubs"))
+                implementation(libs.mkd.state.common)
+                implementation(projects.mkdserviceAuth)
             }
         }
         commonTest {

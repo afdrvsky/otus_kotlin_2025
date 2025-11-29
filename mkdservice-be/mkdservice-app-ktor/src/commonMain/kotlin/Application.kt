@@ -51,14 +51,13 @@ fun Application.module(
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
+        allowMethod(HttpMethod.Post)
         allowHeader(HttpHeaders.Authorization)
-        allowHeader("MyCustomHeader")
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowOrigins { origin: String -> origin == "http://localhost:3000" }
         allowCredentials = true
-        /* TODO
-            Это временное решение, оно опасно.
-            В боевом приложении здесь должны быть конкретные настройки
-        */
-        anyHost()
+        allowHost("localhost:8080")
     }
 
     routing {

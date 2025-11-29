@@ -5,20 +5,27 @@ import com.datastax.oss.driver.api.core.CqlSession
 import com.datastax.oss.driver.api.core.cql.AsyncResultSet
 import com.datastax.oss.driver.internal.core.type.codec.extras.enums.EnumNameCodec
 import com.datastax.oss.driver.internal.core.type.codec.registry.DefaultCodecRegistry
+import com.fedorovsky.mkdservice.backend.repo.cassandra.model.MeterApartmentDTO
 import com.fedorovsky.mkdservice.backend.repo.cassandra.model.MeterCassandraDTO
 import com.fedorovsky.mkdservice.backend.repo.cassandra.model.MeterCassandraReadingUnit
+import com.fedorovsky.mkdservice.common.helpers.errorValidation
+import com.fedorovsky.mkdservice.common.models.ApartmentId
+import com.fedorovsky.mkdservice.common.models.MeterId
 import com.fedorovsky.mkdservice.common.models.MeterReading
 import com.fedorovsky.mkdservice.common.models.MeterReadingId
 import com.fedorovsky.mkdservice.common.models.MeterReadingLock
 import com.fedorovsky.mkdservice.common.repo.DbMeterFilterRequest
 import com.fedorovsky.mkdservice.common.repo.DbMeterIdRequest
 import com.fedorovsky.mkdservice.common.repo.DbMeterRequest
+import com.fedorovsky.mkdservice.common.repo.DbMeterResponseErr
 import com.fedorovsky.mkdservice.common.repo.DbMeterResponseOk
 import com.fedorovsky.mkdservice.common.repo.DbMetersReponseOk
 import com.fedorovsky.mkdservice.common.repo.IDbMeterResponse
 import com.fedorovsky.mkdservice.common.repo.IDbMetersResponse
 import com.fedorovsky.mkdservice.common.repo.IRepoMeter
 import com.fedorovsky.mkdservice.common.repo.MeterRepoBase
+import com.fedorovsky.mkdservice.common.repo.errorDb
+import com.fedorovsky.mkdservice.common.repo.errorNotBelongTo
 import com.fedorovsky.mkdservice.common.repo.errorNotFound
 import com.fedorovsky.mkdservice.common.repo.errorRepoConcurrency
 import com.fedorovsky.mkdservice.repo.common.IRepoMeterInitializable
@@ -60,6 +67,10 @@ class RepoMeterCassandra(
         mapper.meterDao(keyspaceName, MeterCassandraDTO.TABLE_NAME)
     }
 
+    private val daoMeterApartment by lazy {
+        mapper.meterApartmentDao(keyspaceName, MeterApartmentDTO.TABLE_NAME)
+    }
+
     fun clear() = dao.deleteAll()
 
     override fun save(meters: Collection<MeterReading>): Collection<MeterReading> = runBlocking {
@@ -71,17 +82,19 @@ class RepoMeterCassandra(
             id = MeterReadingId(randomUuid()),
             lock = MeterReadingLock(randomUuid()),
             dateTime = LocalDateTime.now(ZoneId.of("Europe/Moscow")).toString(),
-            )
-        dao.create(MeterCassandraDTO(new)).await()
-        DbMeterResponseOk(new)
+        )
+        when {
+            isMeterIdInApartment(new.apartmentId, new.meterId) -> run {
+                dao.create(MeterCassandraDTO(new)).await()
+                DbMeterResponseOk(new)
+            }
+            else -> errorNotBelongTo(new.apartmentId, new.meterId)
+        }
     }
 
     override suspend fun readMeter(rq: DbMeterFilterRequest): IDbMetersResponse = tryMetersMethod {
-        val found = dao.read(rq).await()
-        when {
-            found.isEmpty() -> return@tryMetersMethod errorNotFound(rq)
-            else -> DbMetersReponseOk(found.map { it.toMeterReadingModel() })
-        }
+        val found = dao.read(rq).await().sortedByDescending(MeterCassandraDTO::dateTime)
+        DbMetersReponseOk(found.map { it.toMeterReadingModel() })
     }
 
     override suspend fun updateMeter(rq: DbMeterRequest): IDbMeterResponse = tryMeterMethod {
@@ -138,4 +151,9 @@ class RepoMeterCassandra(
         .split(Regex("""\s*,\s*"""))
         .map { InetSocketAddress(InetAddress.getByName(it), port) }
 
+    private fun isMeterIdInApartment(apartmentId: ApartmentId, meterId: MeterId) =
+        runBlocking {
+            val res = daoMeterApartment.read(apartmentId.asString(), meterId.asString())?.await()
+            res != null
+        }
 }

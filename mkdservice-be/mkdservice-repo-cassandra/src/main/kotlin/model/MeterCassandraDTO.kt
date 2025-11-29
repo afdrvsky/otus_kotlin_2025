@@ -64,7 +64,7 @@ data class MeterCassandraDTO(
         const val COLUMN_AMOUNT = "amount"
         const val COLUMN_DATE_TIME = "date_time"
         const val COLUMN_METER_ID = "meter_id"
-        const val COLUMN_APARTMENT_ID = "appointment_id"
+        const val COLUMN_APARTMENT_ID = "apartment_id"
         const val COLUMN_UNIT = "unit"
         const val COLUMN_LOCK = "lock"
     }

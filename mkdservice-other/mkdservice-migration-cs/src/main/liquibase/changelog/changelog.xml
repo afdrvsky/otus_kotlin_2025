@@ -9,5 +9,9 @@
              relativeToChangelogFile="true"
              splitStatements="true"
              endDelimiter=";"/>
+    <sqlFile path="scripts/001-create-meter-apartment.cql"
+             relativeToChangelogFile="true"
+             splitStatements="true"
+             endDelimiter=";"/>
 </changeSet>
 </databaseChangeLog>

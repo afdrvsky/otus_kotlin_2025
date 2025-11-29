@@ -6,7 +6,7 @@ import com.fedorovsky.mkdservice.states.common.statemachine.SMTransition
 import kotlinx.datetime.Instant
 
 data class MkdStateRq(
-    var meterId: MkdMeterStateId = MkdMeterStateId.NONE,
+    var stateId: MkdMeterStateId = MkdMeterStateId.NONE,
     var oldState: SMMeterStates = SMMeterStates.NONE,
     var created: Instant = Instant.NONE,
     var views: Int = 0,

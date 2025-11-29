@@ -1,7 +1,9 @@
 package com.fedorovsky.mkdservice.common.repo
 
 import com.fedorovsky.mkdservice.common.helpers.errorSystem
+import com.fedorovsky.mkdservice.common.models.ApartmentId
 import com.fedorovsky.mkdservice.common.models.MeterError
+import com.fedorovsky.mkdservice.common.models.MeterId
 import com.fedorovsky.mkdservice.common.models.MeterReading
 import com.fedorovsky.mkdservice.common.models.MeterReadingId
 import com.fedorovsky.mkdservice.common.models.MeterReadingLock
@@ -28,6 +30,16 @@ fun errorNotFound(rq: DbMeterFilterRequest) = DbMetersResponseErr(
             message = "Object with request: ${rq.meterId} or ${rq.meterReadingId} or ${rq.apartmentId} not found",
         )
     )
+)
+
+fun errorNotBelongTo(apartmentId: ApartmentId, meterId: MeterId) = DbMeterResponseErr(
+        MeterError(
+            code = "$ERROR_GROUP_REPO-not-found",
+            group = ERROR_GROUP_REPO,
+            field = "meterId",
+            message = "Meter id ${meterId.asString()} is not belong to apartment id ${apartmentId.asString()}",
+        )
+
 )
 
 val errorEmptyId = DbMeterResponseErr(

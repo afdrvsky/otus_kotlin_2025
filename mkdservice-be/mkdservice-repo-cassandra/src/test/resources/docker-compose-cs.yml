@@ -3,7 +3,7 @@ services:
   cassandra:
     image: cassandra:5.0.3
     ports:
-      - "9042"
+      - "9042:9042"
     environment:
       CASSANDRA_DC: "dc1"
       CASSANDRA_ENDPOINT_SNITCH:  "GossipingPropertyFileSnitch"

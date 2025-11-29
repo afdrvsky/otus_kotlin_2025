@@ -46,8 +46,8 @@ class KafkaControllerTest {
                             meter = MeterCreateObject(
                                 amount = "100.01",
                                 unit = MeterReadingUnit.M3.toString(),
-                                meterId = 1,
-                                apartmentId = 10,
+                                meterId = "1",
+                                apartmentId = "10",
                             ),
                             debug = MeterDebug(
                                 mode = MeterRequestDebugMode.STUB,

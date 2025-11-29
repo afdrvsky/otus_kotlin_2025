@@ -11,6 +11,9 @@ interface CassandraMapper {
     @DaoFactory
     fun meterDao(@DaoKeyspace keyspace: String, @DaoTable tableName: String): MeterCassandraDAO
 
+    @DaoFactory
+    fun meterApartmentDao(@DaoKeyspace keyspace: String, @DaoTable tableName: String): MeterApartmentDAO
+
     companion object{
         fun builder(session: CqlSession) = CassandraMapperBuilder(session)
     }

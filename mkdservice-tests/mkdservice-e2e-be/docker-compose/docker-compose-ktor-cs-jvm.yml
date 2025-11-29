@@ -3,7 +3,7 @@
 version: '3.9'
 services:
   mkdservice:
-    image: mkdservice-app-ktor:1.0-SNAPSHOT
+    image: mkdservice-app-ktor:0.0.1
     ports:
       - "8080"
     environment:

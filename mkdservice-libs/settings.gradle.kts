@@ -27,4 +27,5 @@ pluginManagement {
 include(":mkdservice-lib-logging-common")
 include(":mkdservice-lib-logging-kermit")
 include(":mkdservice-lib-cor")
+include(":mkdservice-lib-logging-logback")
 

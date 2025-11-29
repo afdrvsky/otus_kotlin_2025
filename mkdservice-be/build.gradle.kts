@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.fedorovsky.mkdservice"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 allprojects {
     repositories {
@@ -27,6 +27,15 @@ tasks {
     register("build" ) {
         group = "build"
     }
+    register("clean" ) {
+        group = "build"
+        subprojects.forEach { proj ->
+            println("PROJ $proj")
+            proj.getTasksByName("clean", false).also {
+                this@register.dependsOn(it)
+            }
+        }
+    }
     register("check" ) {
         group = "verification"
         subprojects.forEach { proj ->
@@ -35,5 +44,9 @@ tasks {
                 this@register.dependsOn(it)
             }
         }
+    }
+    register("buildImages") {
+        dependsOn(project("mkdservice-app-ktor").tasks.getByName("publishImageToLocalRegistry"))
+        dependsOn(project("mkdservice-app-ktor").tasks.getByName("dockerBuild"))
     }
 }
