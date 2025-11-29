@@ -16,9 +16,7 @@ Mkdservice - веб-приложение (с логикой на бекенде)
    1. [Файлы сборки](./deploy)
 
 ## Визуальная схема фронтенда
-![Фронт житель](user.png)
-
-![Фронт сотрудник.png](organization.png)
+![Фронт житель](user1.png)
 
 ### Плагины Gradle сборки проекта
 
@@ -36,11 +34,13 @@ Mkdservice - веб-приложение (с логикой на бекенде)
    логирования
 3. [mkdservice-lib-logging-kermit](mkdservice-libs/mkdservice-lib-logging-kermit) - Библиотека логирования
    на базе библиотеки Kermit
+4. [mkdservice-lib-logging-logback](mkdservice-libs/mkdservice-lib-logging-logback) - Библиотека логирования
+   на базе библиотеки Logback
 
 ### Транспортные модели, API
 
 1. [specs](specs) - описание API в форме OpenAPI-спецификаций
-2. [mkdservice-api-v2-kmp](mkdservice-be/mkdservice-api-v1-kmp) - Генерация транспортных
+2. [mkdservice-api-v1-kmp](mkdservice-be/mkdservice-api-v1-kmp) - Генерация транспортных
    моделей с KMP
 3. [mkdservice-common](mkdservice/mkdservice-common) - модуль с общими классами для модулей проекта. В
    частности, там располагаются внутренние модели и контекст.
